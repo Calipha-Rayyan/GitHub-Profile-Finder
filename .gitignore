@@ -47,3 +47,8 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Screen recordings & inspection dumps
+*.mp4
+screenshots/recording_frames/
+scripts/inspect_recording.js

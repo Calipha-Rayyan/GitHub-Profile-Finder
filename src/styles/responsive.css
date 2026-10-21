@@ -27,6 +27,20 @@
     font-size: var(--font-size-base);
   }
 
+  .hero__hints {
+    justify-content: center;
+  }
+
+  .results-toolbar {
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .results-toolbar__form {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
   .search-form {
     flex-direction: column;
     max-width: 100%;
@@ -122,6 +136,20 @@
 
   .hero__headline {
     font-size: var(--font-size-4xl);
+  }
+
+  .hero__hints {
+    justify-content: center;
+  }
+
+  .results-toolbar {
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .results-toolbar__form {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 
   .search-form {

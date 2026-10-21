@@ -7,21 +7,24 @@
 
 ## 📸 Screenshots
 
-| Desktop Hero & 3D Prism | Profile Results & Statistics |
+| Vibrant Desktop Hero & 3D Prism | Results Toolbar & Profile View |
 |:---:|:---:|
-| ![Hero View](./screenshots/1-desktop-hero.png) | ![Profile View](./screenshots/4-profile-results.png) |
+| ![Vibrant Hero View](./screenshots/vibrant-desktop-hero.png) | ![Results Toolbar & Profile](./screenshots/vibrant-results-toolbar.png) |
 
-| Repository Discovery Grid | 404 Not Found State |
+| Multi-User Discovery (`@gaearon`) | Repository Discovery Grid |
 |:---:|:---:|
-| ![Repo Grid](./screenshots/5-repo-grid.png) | ![404 State](./screenshots/3-user-not-found.png) |
+| ![Multi-User Discovery](./screenshots/vibrant-second-profile.png) | ![Repo Grid](./screenshots/5-repo-grid.png) |
 
 ---
 
 ## ✨ Features
 
 - **Live GitHub REST API Integration:** Direct client-side integration querying public user profiles and repositories via native browser `fetch`.
-- **Interactive 3D Spatial Hero:** A layered prism composition built using CSS `perspective: 1200px`, `transform-style: preserve-3d`, and depth-separated planes (`translateZ(0px)` to `-180px`), animated smoothly with pointer tracking via `requestAnimationFrame`.
-- **Original Looping Video Background:** High-definition 8-second seamless looping abstract motion graphic (`public/videos/hero-bg.webm`, 1.1 MB) with soft particles and ambient lighting in the Lavender Prism palette, complete with fallback poster (`public/images/hero-poster.jpg`).
+- **Enhanced Results Toolbar:** Seamless multi-user exploration. Once results appear, a persistent toolbar provides an active profile badge, an inline search input with instant submission, and a quick "Top" scroll button—eliminating the need to manually scroll back to the hero to search another developer.
+- **Smart URL & Handle Sanitization:** Automatically parses raw usernames, `@username` tags, and complete profile URLs (e.g., `https://github.com/Calipha-Rayyan`) down to clean identifiers.
+- **Interactive 3D Spatial Hero:** Multi-layered isometric prism composition built with CSS 3D perspective (`1200px`), depth-separated planes (`translateZ(0px)` to `-180px`), and cursor parallax tracking that responds across the entire hero section.
+- **Vibrant Looping Video Background:** High-definition 8-second seamless looping abstract motion graphic (`public/videos/hero-bg.webm`, 1.75 MB) featuring glowing cyan, magenta, and coral particles and geometric prisms, with radial vignette framing for optimal contrast.
+- **Quick-Discovery Suggestion Chips:** One-click sample profile buttons (`octocat`, `gaearon`, `Calipha-Rayyan`) for instant exploration.
 - **Complete State Coverage:**
   - **Empty Input:** Pre-flight validation prevents unnecessary API consumption.
   - **Malformed Input:** Validates GitHub username regex patterns (1–39 alphanumeric and hyphen characters).
@@ -38,22 +41,25 @@
 
 ---
 
-## 🎨 Design Direction — Lavender Prism
+## 🎨 Design Direction — Lavender Prism (Enhanced)
 
-A refined visual system combining lavender, violet, coral, plum, and peach.
+A high-contrast visual system combining lavender, violet, coral, plum, and electric cyan.
 
 | Token | Hex Value | Usage | Contrast Ratio (vs. Background) |
 |---|---|---|:---:|
-| **Background** | `#F0EAFE` | Page body & hero backdrops | — |
-| **Main Surface** | `#E6DDFB` | Profile card & footer surfaces | — |
-| **Elevated Surface** | `#D8CCF7` | Badges, avatar rings & borders | — |
-| **Primary Violet** | `#6750D8` | Primary buttons & links | **4.82:1** (WCAG AA) |
-| **Deep Violet** | `#4B378F` | Headlines & dark buttons | **7.99:1** (WCAG AAA) |
-| **Coral Accent** | `#F47773` | Highlights & orbital accents | — |
-| **Peach Highlight** | `#FFE0D8` | Warm ambient gradients | — |
-| **Main Text** | `#3A2F5B` | Primary headings & card copy | **10.30:1** (WCAG AAA) |
-| **Secondary Text** | `#665D82` | Descriptions & timestamps | **5.19:1** (WCAG AA) |
-| **Borders** | `#CFC4ED` | Dividers & card outlines | — |
+| **Background Light** | `#EFE6FF` | Page body & hero backdrops | — |
+| **Surface Mid** | `#E3D5FF` | Card backgrounds & elevated areas | — |
+| **Surface Strong** | `#D8C5FF` | Active cards & hover states | — |
+| **Primary Violet** | `#6D28D9` | Primary action buttons & brand focus | **7.1:1** (WCAG AAA) |
+| **Deep Indigo** | `#4438CA` | Heading gradients & dark badges | **8.5:1** (WCAG AAA) |
+| **Electric Violet** | `#8B5CF6` | Glows, active borders & focus rings | — |
+| **Coral Sunset** | `#FF6B6B` | Accents, gradients & live badges | — |
+| **Magenta Flare** | `#E6509B` | Gradient transitions & taglines | — |
+| **Prism Cyan** | `#35C7D4` | Accent dots, status indicators & borders | — |
+| **Deep Plum Text** | `#33224D` | Primary headings & high-contrast text | **12.1:1** (WCAG AAA) |
+| **Muted Violet Text** | `#625477` | Descriptions, metadata & timestamps | **5.4:1** (WCAG AA) |
+| **Border Medium** | `#BDA9EA` | Defined card outlines & dividers | — |
+| **Peach Highlight** | `#FFE0D8` | Warm ambient gradients & highlights | — |
 
 *Typography:* **Inter** with native system fallbacks (`-apple-system`, `BlinkMacSystemFont`, `Segoe UI`, `Roboto`, `sans-serif`).
 
@@ -184,7 +190,8 @@ GitHub-Profile-Finder/
     ├── components/
     │   ├── Navbar.jsx           # Sticky glassmorphic header
     │   ├── Hero.jsx             # 3D prism, video background & search container
-    │   ├── SearchForm.jsx       # Input field with validation & triggers
+    │   ├── SearchForm.jsx       # Input field with URL sanitization & validation
+    │   ├── ResultsToolbar.jsx   # Results toolbar for quick re-search & active profile
     │   ├── ProfileCard.jsx      # Avatar, user metadata & external profile link
     │   ├── ProfileStats.jsx     # Repository, follower, and following counts
     │   ├── RepositoryGrid.jsx   # Grid list with pagination control

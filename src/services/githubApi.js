@@ -7,14 +7,25 @@ const BASE_URL = 'https://api.github.com';
 const PER_PAGE = 12;
 
 /**
+ * Cleans user input by stripping full GitHub URLs and leading @ symbols.
+ */
+export function cleanUsername(input) {
+  if (!input || typeof input !== 'string') return '';
+  let cleaned = input.trim();
+  cleaned = cleaned.replace(/^https?:\/\/(www\.)?github\.com\//i, '');
+  cleaned = cleaned.replace(/^github\.com\//i, '');
+  cleaned = cleaned.replace(/^@+/, '').replace(/\/+$/, '');
+  return cleaned.trim();
+}
+
+/**
  * Validates a GitHub username format.
  * GitHub usernames: 1-39 chars, alphanumeric or hyphens, no leading/trailing hyphens.
  */
 export function isValidUsername(username) {
-  if (!username || typeof username !== 'string') return false;
-  const trimmed = username.trim();
-  if (trimmed.length === 0 || trimmed.length > 39) return false;
-  return /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(trimmed);
+  const cleaned = cleanUsername(username);
+  if (!cleaned || cleaned.length > 39) return false;
+  return /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(cleaned);
 }
 
 /**

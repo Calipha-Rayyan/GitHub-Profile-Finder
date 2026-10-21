@@ -6,6 +6,7 @@ import ProfileStats from './components/ProfileStats';
 import RepositoryGrid from './components/RepositoryGrid';
 import LoadingState from './components/LoadingState';
 import ErrorState from './components/ErrorState';
+import ResultsToolbar from './components/ResultsToolbar';
 import { fetchUserProfile, fetchUserRepos } from './services/githubApi';
 
 import './styles/global.css';
@@ -175,6 +176,17 @@ export default function App() {
 
           {user && !isLoading && (
             <>
+              <ResultsToolbar
+                currentUsername={user.login}
+                onSearch={handleSearch}
+                isLoading={isLoading}
+                onScrollToHero={() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  setTimeout(() => {
+                    document.querySelector('#hero-github-username')?.focus();
+                  }, 300);
+                }}
+              />
               <ProfileCard user={user} />
               <ProfileStats user={user} />
               <RepositoryGrid
@@ -192,13 +204,19 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        <div className="container">
-          <p>
-            Built with React &amp; the{' '}
-            <a href="https://docs.github.com/en/rest" target="_blank" rel="noopener noreferrer">
-              GitHub REST API
-            </a>
-            . Not affiliated with GitHub, Inc.
+        <div className="container footer__inner">
+          <div className="footer__brand">
+            <span className="footer__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+                <line x1="12" y1="22" x2="12" y2="15.5" />
+                <polyline points="22 8.5 12 15.5 2 8.5" />
+              </svg>
+            </span>
+            <span className="footer__title">GitHub Profile Finder</span>
+          </div>
+          <p className="footer__tagline">
+            Developer exploration powered by the Lavender Prism design system.
           </p>
         </div>
       </footer>

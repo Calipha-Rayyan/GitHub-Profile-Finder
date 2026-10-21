@@ -6,8 +6,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function generateHeroVideo() {
-  console.log('Starting video generation...');
+async function generateVibrantHeroVideo() {
+  console.log('--- Generating Vibrant Animated Background Video (Lavender Prism Enhanced) ---');
   const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
   const browser = await puppeteer.launch({
@@ -19,13 +19,13 @@ async function generateHeroVideo() {
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 720 });
 
-  // HTML content with Canvas rendering seamless loop
+  // HTML content with rich, vibrant abstract geometric motion
   const htmlContent = `
 <!DOCTYPE html>
 <html>
 <head>
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; background: #F0EAFE; }
+    body, html { margin: 0; padding: 0; overflow: hidden; background: #EFE6FF; }
     canvas { width: 1280px; height: 720px; display: block; }
   </style>
 </head>
@@ -39,131 +39,208 @@ async function generateHeroVideo() {
     const FPS = 30;
     const TOTAL_FRAMES = DURATION_SEC * FPS;
 
-    // Prismatic floating panels
-    const panels = [
-      { baseAngle: 0, radX: 350, radY: 180, sizeW: 240, sizeH: 160, rotOffset: 0.2, color: 'rgba(103, 80, 216, 0.25)', border: 'rgba(103, 80, 216, 0.4)' },
-      { baseAngle: Math.PI * 0.4, radX: 420, radY: 220, sizeW: 300, sizeH: 180, rotOffset: -0.4, color: 'rgba(216, 204, 247, 0.35)', border: 'rgba(207, 196, 237, 0.5)' },
-      { baseAngle: Math.PI * 0.8, radX: 300, radY: 150, sizeW: 180, sizeH: 140, rotOffset: 0.6, color: 'rgba(244, 119, 115, 0.18)', border: 'rgba(244, 119, 115, 0.35)' },
-      { baseAngle: Math.PI * 1.2, radX: 460, radY: 250, sizeW: 280, sizeH: 200, rotOffset: -0.3, color: 'rgba(75, 55, 143, 0.22)', border: 'rgba(75, 55, 143, 0.4)' },
-      { baseAngle: Math.PI * 1.6, radX: 380, radY: 190, sizeW: 220, sizeH: 150, rotOffset: 0.5, color: 'rgba(255, 224, 216, 0.3)', border: 'rgba(244, 119, 115, 0.3)' }
+    // Prismatic floating geometric structures
+    const structures = [
+      { baseAngle: 0, radX: 360, radY: 170, size: 140, rotSpeed: 1, color: 'rgba(109, 40, 217, 0.38)', stroke: 'rgba(139, 92, 246, 0.65)' },
+      { baseAngle: Math.PI * 0.35, radX: 420, radY: 220, size: 170, rotSpeed: -1, color: 'rgba(255, 107, 107, 0.32)', stroke: 'rgba(255, 107, 107, 0.65)' },
+      { baseAngle: Math.PI * 0.7, radX: 320, radY: 140, size: 110, rotSpeed: 1.5, color: 'rgba(53, 199, 212, 0.35)', stroke: 'rgba(53, 199, 212, 0.7)' },
+      { baseAngle: Math.PI * 1.1, radX: 480, radY: 240, size: 190, rotSpeed: -0.8, color: 'rgba(230, 80, 155, 0.32)', stroke: 'rgba(230, 80, 155, 0.6)' },
+      { baseAngle: Math.PI * 1.5, radX: 390, radY: 180, size: 130, rotSpeed: 1.2, color: 'rgba(68, 56, 202, 0.35)', stroke: 'rgba(139, 92, 246, 0.65)' },
+      { baseAngle: Math.PI * 1.85, radX: 280, radY: 130, size: 95, rotSpeed: -1.4, color: 'rgba(255, 224, 216, 0.45)', stroke: 'rgba(255, 107, 107, 0.6)' }
     ];
 
-    // Floating particles
+    // Floating glowing particles with connection lines
     const particles = [];
-    for (let i = 0; i < 35; i++) {
+    for (let i = 0; i < 42; i++) {
       particles.push({
-        baseAngle: (i / 35) * Math.PI * 2,
-        rad: 120 + (i % 5) * 80,
-        yAmp: 30 + (i % 7) * 15,
+        baseAngle: (i / 42) * Math.PI * 2,
+        rad: 140 + (i % 6) * 75,
+        yAmp: 35 + (i % 5) * 15,
         speedMul: (i % 2 === 0 ? 1 : -1) * (1 + (i % 3) * 0.5),
-        size: 3 + (i % 4) * 2,
-        color: i % 3 === 0 ? 'rgba(244, 119, 115, 0.6)' : i % 3 === 1 ? 'rgba(103, 80, 216, 0.5)' : 'rgba(216, 204, 247, 0.7)'
+        size: 3 + (i % 4) * 2.5,
+        color: i % 4 === 0 ? '#FF6B6B' : i % 4 === 1 ? '#35C7D4' : i % 4 === 2 ? '#8B5CF6' : '#E6509B'
       });
     }
 
-    function renderFrame(t) { // t from 0 to 1
+    function renderFrame(t) {
       const angle = t * Math.PI * 2;
 
-      // Clear with background gradient
-      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-      bgGrad.addColorStop(0, '#F0EAFE');
-      bgGrad.addColorStop(0.5, '#E6DDFB');
-      bgGrad.addColorStop(1, '#D8CCF7');
-      ctx.fillStyle = bgGrad;
+      // Base rich gradient
+      const bg = ctx.createLinearGradient(0, 0, W, H);
+      bg.addColorStop(0, '#EFE6FF');
+      bg.addColorStop(0.45, '#E3D5FF');
+      bg.addColorStop(1, '#D8C5FF');
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
-      // Large ambient radial lights
-      const light1X = W * 0.35 + Math.sin(angle) * 120;
-      const light1Y = H * 0.4 + Math.cos(angle) * 80;
-      const rad1 = ctx.createRadialGradient(light1X, light1Y, 10, light1X, light1Y, 450);
-      rad1.addColorStop(0, 'rgba(103, 80, 216, 0.35)');
-      rad1.addColorStop(0.6, 'rgba(103, 80, 216, 0.08)');
-      rad1.addColorStop(1, 'rgba(103, 80, 216, 0)');
+      // Moving atmospheric light orbs (Cyan, Violet, Coral, Pink)
+      // 1. Violet/Indigo Orb
+      const l1X = W * 0.32 + Math.sin(angle) * 160;
+      const l1Y = H * 0.38 + Math.cos(angle) * 110;
+      const rad1 = ctx.createRadialGradient(l1X, l1Y, 20, l1X, l1Y, 480);
+      rad1.addColorStop(0, 'rgba(109, 40, 217, 0.42)');
+      rad1.addColorStop(0.5, 'rgba(139, 92, 246, 0.16)');
+      rad1.addColorStop(1, 'rgba(109, 40, 217, 0)');
       ctx.fillStyle = rad1;
       ctx.fillRect(0, 0, W, H);
 
-      const light2X = W * 0.7 + Math.cos(angle) * 140;
-      const light2Y = H * 0.6 + Math.sin(angle) * 90;
-      const rad2 = ctx.createRadialGradient(light2X, light2Y, 10, light2X, light2Y, 400);
-      rad2.addColorStop(0, 'rgba(244, 119, 115, 0.28)');
-      rad2.addColorStop(0.6, 'rgba(255, 224, 216, 0.1)');
-      rad2.addColorStop(1, 'rgba(244, 119, 115, 0)');
+      // 2. Coral/Peach Orb
+      const l2X = W * 0.72 + Math.cos(angle) * 180;
+      const l2Y = H * 0.58 + Math.sin(angle) * 120;
+      const rad2 = ctx.createRadialGradient(l2X, l2Y, 20, l2X, l2Y, 440);
+      rad2.addColorStop(0, 'rgba(255, 107, 107, 0.35)');
+      rad2.addColorStop(0.5, 'rgba(255, 224, 216, 0.14)');
+      rad2.addColorStop(1, 'rgba(255, 107, 107, 0)');
       ctx.fillStyle = rad2;
       ctx.fillRect(0, 0, W, H);
 
-      // Orbital Rings
+      // 3. Cyan Glowing Orb (Adds vibrant modern SaaS illumination)
+      const l3X = W * 0.55 + Math.sin(angle + Math.PI) * 140;
+      const l3Y = H * 0.28 + Math.cos(angle + Math.PI) * 90;
+      const rad3 = ctx.createRadialGradient(l3X, l3Y, 15, l3X, l3Y, 360);
+      rad3.addColorStop(0, 'rgba(53, 199, 212, 0.36)');
+      rad3.addColorStop(0.5, 'rgba(53, 199, 212, 0.12)');
+      rad3.addColorStop(1, 'rgba(53, 199, 212, 0)');
+      ctx.fillStyle = rad3;
+      ctx.fillRect(0, 0, W, H);
+
+      // 4. Pink Accent Orb
+      const l4X = W * 0.2 + Math.cos(angle * 1.5) * 100;
+      const l4Y = H * 0.75 + Math.sin(angle * 1.5) * 80;
+      const rad4 = ctx.createRadialGradient(l4X, l4Y, 15, l4X, l4Y, 320);
+      rad4.addColorStop(0, 'rgba(230, 80, 155, 0.28)');
+      rad4.addColorStop(1, 'rgba(230, 80, 155, 0)');
+      ctx.fillStyle = rad4;
+      ctx.fillRect(0, 0, W, H);
+
+      // Elegant Orbital Rings with depth rotation
       ctx.save();
-      ctx.translate(W * 0.5, H * 0.5);
-      
-      // Ring 1
-      ctx.rotate(angle * 0.5);
+      ctx.translate(W * 0.55, H * 0.48);
+
+      // Major Ellipse 1 (Cyan/Violet)
+      ctx.save();
+      ctx.rotate(angle * 0.4);
       ctx.beginPath();
-      ctx.ellipse(0, 0, 480, 260, Math.PI / 6, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(103, 80, 216, 0.15)';
+      ctx.ellipse(0, 0, 520, 270, Math.PI / 5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.32)';
       ctx.lineWidth = 2;
       ctx.stroke();
+      ctx.restore();
 
-      // Ring 2
+      // Major Ellipse 2 (Coral/Pink)
+      ctx.save();
+      ctx.rotate(-angle * 0.35);
       ctx.beginPath();
-      ctx.ellipse(0, 0, 380, 200, -Math.PI / 4, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(244, 119, 115, 0.18)';
+      ctx.ellipse(0, 0, 420, 210, -Math.PI / 4, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 107, 107, 0.3)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+
+      // Inner Ellipse 3 (Cyan glowing)
+      ctx.save();
+      ctx.rotate(angle * 0.6);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 310, 160, Math.PI / 3, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(53, 199, 212, 0.35)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
       ctx.restore();
 
-      // Translucent Prismatic Panels
-      panels.forEach((p, idx) => {
-        const panAngle = p.baseAngle + angle;
-        const px = W * 0.5 + Math.cos(panAngle) * p.radX;
-        const py = H * 0.5 + Math.sin(panAngle) * p.radY;
-        const rot = p.rotOffset + Math.sin(angle * 2 + idx) * 0.25;
+      ctx.restore();
+
+      // Prismatic Drifting Glass Hexagons/Polygons
+      structures.forEach((st, idx) => {
+        const curAngle = st.baseAngle + angle;
+        const px = W * 0.55 + Math.cos(curAngle) * st.radX;
+        const py = H * 0.48 + Math.sin(curAngle) * st.radY;
+        const rot = curAngle * st.rotSpeed + Math.sin(angle * 2 + idx) * 0.3;
 
         ctx.save();
         ctx.translate(px, py);
         ctx.rotate(rot);
 
-        // Glass panel body
-        ctx.fillStyle = p.color;
-        ctx.strokeStyle = p.border;
-        ctx.lineWidth = 1.5;
-        
-        // Rounded rectangle panel
-        const r = 16;
-        const w = p.sizeW;
-        const h = p.sizeH;
+        // Glass panel polygon (rounded 6-sided crystal)
         ctx.beginPath();
-        ctx.roundRect(-w/2, -h/2, w, h, r);
+        const sides = 6;
+        const radius = st.size * 0.55;
+        for (let s = 0; s < sides; s++) {
+          const a = (s / sides) * Math.PI * 2;
+          const x = Math.cos(a) * radius;
+          const y = Math.sin(a) * radius;
+          if (s === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = st.color;
         ctx.fill();
+        ctx.strokeStyle = st.stroke;
+        ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Inner specular reflection line
+        // Inner geometric facets
         ctx.beginPath();
-        ctx.moveTo(-w/2 + 20, -h/2 + 15);
-        ctx.lineTo(w/2 - 40, -h/2 + 15);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.moveTo(0, 0);
+        ctx.lineTo(radius * 0.8, 0);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-radius * 0.5, radius * 0.7);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-radius * 0.5, -radius * 0.7);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.lineWidth = 1;
         ctx.stroke();
+
+        // Specular highlight gleam
+        ctx.beginPath();
+        ctx.arc(radius * 0.3, -radius * 0.3, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
 
         ctx.restore();
       });
 
-      // Floating Accent Particles
+      // Render Floating Glow Particles
+      const renderedPoints = [];
       particles.forEach((part) => {
         const pAng = part.baseAngle + angle * part.speedMul;
-        const pX = W * 0.5 + Math.cos(pAng) * part.rad;
-        const pY = H * 0.5 + Math.sin(pAng) * (part.rad * 0.5) + Math.sin(angle * 3) * part.yAmp;
+        const pX = W * 0.55 + Math.cos(pAng) * part.rad;
+        const pY = H * 0.48 + Math.sin(pAng) * (part.rad * 0.55) + Math.sin(angle * 3 + part.baseAngle) * part.yAmp;
+
+        renderedPoints.push({ x: pX, y: pY, color: part.color });
 
         ctx.beginPath();
         ctx.arc(pX, pY, part.size, 0, Math.PI * 2);
         ctx.fillStyle = part.color;
+        ctx.shadowColor = part.color;
+        ctx.shadowBlur = 10;
         ctx.fill();
+        ctx.shadowBlur = 0; // reset
       });
+
+      // Subtle dynamic constellation lines between nearby particles
+      for (let i = 0; i < renderedPoints.length; i++) {
+        for (let j = i + 1; j < renderedPoints.length; j++) {
+          const p1 = renderedPoints[i];
+          const p2 = renderedPoints[j];
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 110) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = 'rgba(189, 169, 234, ' + (0.28 * (1 - dist / 110)) + ')';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
     }
 
     window.startRecording = function() {
       return new Promise((resolve, reject) => {
         const stream = canvas.captureStream(FPS);
-        const options = { mimeType: 'video/webm;codecs=vp8', videoBitsPerSecond: 3000000 };
+        const options = { mimeType: 'video/webm;codecs=vp8', videoBitsPerSecond: 3500000 };
         const recorder = new MediaRecorder(stream, options);
         const chunks = [];
 
@@ -197,7 +274,7 @@ async function generateHeroVideo() {
 
     window.capturePoster = function() {
       renderFrame(0);
-      return canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
+      return canvas.toDataURL('image/jpeg', 0.94).split(',')[1];
     };
   </script>
 </body>
@@ -207,14 +284,14 @@ async function generateHeroVideo() {
   await page.setContent(htmlContent);
   await page.waitForFunction('typeof window.startRecording === "function"');
 
-  console.log('Capturing hero poster image...');
+  console.log('Capturing vibrant hero poster image...');
   const posterBase64 = await page.evaluate(() => window.capturePoster());
   const posterBuffer = Buffer.from(posterBase64, 'base64');
   const posterPath = path.resolve(__dirname, '../public/images/hero-poster.jpg');
   fs.writeFileSync(posterPath, posterBuffer);
-  console.log('Poster image written to', posterPath, `(${posterBuffer.length} bytes)`);
+  console.log('✓ Poster image written to', posterPath, `(${posterBuffer.length} bytes)`);
 
-  console.log('Recording 8-second seamless looping WebM video...');
+  console.log('Recording 8-second seamless looping WebM video with enhanced vibrancy...');
   const videoBase64 = await page.evaluate(async () => {
     return await window.startRecording();
   });
@@ -222,13 +299,13 @@ async function generateHeroVideo() {
   const videoBuffer = Buffer.from(videoBase64, 'base64');
   const videoPath = path.resolve(__dirname, '../public/videos/hero-bg.webm');
   fs.writeFileSync(videoPath, videoBuffer);
-  console.log('WebM video written to', videoPath, `(${videoBuffer.length} bytes)`);
+  console.log('✓ WebM video written to', videoPath, `(${videoBuffer.length} bytes)`);
 
   await browser.close();
-  console.log('Video generation complete!');
+  console.log('✓ Video generation complete!');
 }
 
-generateHeroVideo().catch(err => {
+generateVibrantHeroVideo().catch(err => {
   console.error('Failed to generate video:', err);
   process.exit(1);
 });

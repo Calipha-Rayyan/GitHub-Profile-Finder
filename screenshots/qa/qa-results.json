@@ -1,0 +1,198 @@
+[
+  {
+    "name": "1. Empty Username Submission",
+    "method": "Submitted form with empty input string",
+    "result": "Rejected with validation message: \"Please enter a GitHub username.\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "2. Malformed Username Submission",
+    "method": "Submitted invalid characters (\"bad_user_name!!\")",
+    "result": "Rejected with format message: \"Username can only contain letters, numbers, and hyphens (1–39 characters, no leading/trailing hyphens).\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "3. Search Using Enter Key",
+    "method": "Typed \"octocat\" and triggered Enter keypress",
+    "result": "Form submitted; profile loaded successfully: \"The Octocat\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "4. Search Using Search Button",
+    "method": "Typed \"gaearon\" and clicked Search button",
+    "result": "Form submitted; profile loaded successfully: \"dan\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "5. Valid Profile & Repo Data Integrity",
+    "method": "Verified profile fields and repo cards rendered for live GitHub user",
+    "result": "Rendered Name: \"dan\", User: \"@gaearon\", Avatar: valid, Link: \"https://github.com/gaearon\", Stats: 3, Repos: 12",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "6. Nonexistent Username 404 State",
+    "method": "Queried unmapped user account (\"nonexist-user-xyz-987\")",
+    "result": "Title: \"User Not Found\", Msg: \"GitHub user not found. Please check the username and try again.\", Retry button available: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "7. Simulated Network Failure",
+    "method": "Intercepted request and simulated connection failure (net::ERR_FAILED)",
+    "result": "Title: \"Connection Error\", Message: \"Unable to connect to GitHub. Please check your internet connection and try again.\", Retry: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "8. Rate Limit Simulation (HTTP 403 + Remaining: 0)",
+    "method": "Mocked HTTP 403 with X-RateLimit-Remaining: 0 and reset timestamp",
+    "result": "Title: \"Rate Limit Exceeded\", Msg: \"GitHub API rate limit exceeded. Rate limit will reset in about 20 minutes.\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "9. Distinguish 403 Forbidden from Rate Limit",
+    "method": "Mocked HTTP 403 with non-zero quota (org restriction)",
+    "result": "Title: \"Access Forbidden\", Msg: \"Access forbidden (403): Resource blocked by organizational policy\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "10. Partial Failure (Profile OK, Repos Fail)",
+    "method": "Profile returned 200 while /repos endpoint returned 500",
+    "result": "Profile retained: \"Partial Success User\", Repo section displayed error: \"Could not load repositories\", Repo Retry button: \"Try Again\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "11. Race Condition / AbortController",
+    "method": "Dispatched slow request (1.0s delay), immediately superseded by fast request",
+    "result": "Delayed request finished (true), final rendered profile: \"Fast User (New Search)\" (never overwritten by stale data)",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "12. Zero Repositories Empty State",
+    "method": "Loaded user with 0 public repositories",
+    "result": "Empty state displayed: \"No repositories\" — \"This user doesn't have any public repositories yet.\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "13. Avatar Fallback & Missing Optional Fields",
+    "method": "Loaded profile with broken avatar URL, null bio, location, company, blog, name",
+    "result": "Avatar fallback rendered with initial \"M\", name defaulted to username \"mock-missing-fields\", meta items count: 0 (clean layout without empty items)",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "14. Repository Pagination / Load More",
+    "method": "Queried user with 14 repos across 2 pages; triggered Load More",
+    "result": "Initial cards: 12, After click: 14, Load More button removed at list end: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "15. 3D Spatial Tilt Pointer Responsiveness",
+    "method": "Dispatched mouse movements over .prism container and evaluated transform",
+    "result": "Initial: \"none\", On hover: \"rotateX(4.59161deg) rotateY(4.54867deg)\", Reset: \"rotateX(0.0416564deg) rotateY(0.0412669deg)\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "16. Spatial 3D Multi-Layer Depth Configuration",
+    "method": "Inspected CSS perspective, preserve-3d, and translateZ layers",
+    "result": "Container perspective: 1200px, Scene transform-style: preserve-3d, Layer count: 4",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "17. Background Video Attributes & Playback",
+    "method": "Evaluated HTML5 <video> attributes and current playback state",
+    "result": "Src: \"http://localhost:5173/videos/hero-bg.webm\", Muted: true, PlaysInline: true, Loop: true, Duration: 9.2s, Poster: \"http://localhost:5173/images/hero-poster.jpg\"",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "18. Prefers-Reduced-Motion Handling",
+    "method": "Emulated prefers-reduced-motion: reduce in browser context",
+    "result": "Video paused: true, Orbit animation duration: 1e-05s (reduced/suppressed)",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "19. Video Visibility Management",
+    "method": "Simulated tab backgrounding via visibilitychange document.hidden = true",
+    "result": "Video paused when document is hidden: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "20. Responsive Viewport 360x640 (Compact Mobile)",
+    "method": "Audited viewport bounds, scrollWidth vs clientWidth, control visibility",
+    "result": "Document: 360px, Scroll: 360px, Overflow: false, Controls accessible: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "20. Responsive Viewport 375x812 (Standard iPhone)",
+    "method": "Audited viewport bounds, scrollWidth vs clientWidth, control visibility",
+    "result": "Document: 375px, Scroll: 375px, Overflow: false, Controls accessible: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "20. Responsive Viewport 768x1024 (Tablet)",
+    "method": "Audited viewport bounds, scrollWidth vs clientWidth, control visibility",
+    "result": "Document: 768px, Scroll: 768px, Overflow: false, Controls accessible: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "20. Responsive Viewport 1024x768 (Small Desktop)",
+    "method": "Audited viewport bounds, scrollWidth vs clientWidth, control visibility",
+    "result": "Document: 1024px, Scroll: 1024px, Overflow: false, Controls accessible: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "20. Responsive Viewport 1440x900 (Large Desktop)",
+    "method": "Audited viewport bounds, scrollWidth vs clientWidth, control visibility",
+    "result": "Document: 1440px, Scroll: 1440px, Overflow: false, Controls accessible: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "21. Rendered Elements Color Contrast (WCAG AA)",
+    "method": "Computed luminance and contrast ratios directly from getComputedStyle values",
+    "result": "Headline on bg: 7.99:1 (Target >= 4.5:1), Description on bg: 5.19:1 (Target >= 4.5:1), Button text on btn bg: 5.65:1 (Target >= 4.5:1)",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "22. Keyboard Navigation & Tab Sequence",
+    "method": "Tested focus states on search input, submit button, and navigation links",
+    "result": "Input focusable: true, Submit focusable: true, Nav link focusable: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "23. ARIA Roles & Accessible Names",
+    "method": "Inspected search form role, input label binding, and decorative hiding",
+    "result": "role=\"search\": true, <label for=\"input\">: true, decorative prism aria-hidden: true",
+    "passed": true,
+    "issues": "None"
+  },
+  {
+    "name": "24. Uncaught Page / Runtime Errors",
+    "method": "Monitored window.onerror and pageerror during entire QA run",
+    "result": "Uncaught runtime exceptions: 0",
+    "passed": true,
+    "issues": "None"
+  }
+]

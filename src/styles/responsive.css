@@ -1,0 +1,202 @@
+/* ============================================================
+   RESPONSIVE STYLES — Mobile-First Refinements
+   ============================================================ */
+
+/* --- Small Phones (360-375px) --- */
+@media (max-width: 480px) {
+  .hero {
+    min-height: auto;
+    padding: var(--space-2xl) 0;
+  }
+
+  .hero__content {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    text-align: center;
+  }
+
+  .hero__text {
+    max-width: 100%;
+  }
+
+  .hero__headline {
+    font-size: var(--font-size-3xl);
+  }
+
+  .hero__description {
+    font-size: var(--font-size-base);
+  }
+
+  .search-form {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .search-form__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .prism {
+    min-height: 260px;
+    order: -1;
+  }
+
+  .prism__scene {
+    width: 220px;
+    height: 250px;
+    transform: scale(0.85);
+  }
+
+  .prism__panel--main { width: 200px; height: 230px; left: 10px; }
+  .prism__panel--side { width: 140px; height: 90px; }
+  .prism__panel--back { width: 130px; height: 150px; }
+  .prism__orbit--1 { width: 280px; height: 280px; }
+  .prism__orbit--2 { width: 220px; height: 220px; }
+
+  .profile {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: var(--space-xl);
+  }
+
+  .profile__avatar-wrap {
+    justify-self: center;
+  }
+
+  .profile__avatar,
+  .profile__avatar-fallback {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile__meta {
+    justify-content: center;
+  }
+
+  .profile__link {
+    margin: 0 auto;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .stats__card {
+    padding: var(--space-md);
+  }
+
+  .stats__number {
+    font-size: var(--font-size-2xl);
+  }
+
+  .repos__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .repo-card {
+    padding: var(--space-lg);
+  }
+
+  .navbar__subtitle {
+    display: none;
+  }
+
+  .navbar__title {
+    font-size: var(--font-size-base);
+  }
+}
+
+/* --- Tablets (481-768px) --- */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hero__content {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    text-align: center;
+  }
+
+  .hero__text {
+    max-width: 100%;
+  }
+
+  .hero__headline {
+    font-size: var(--font-size-4xl);
+  }
+
+  .search-form {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .prism {
+    min-height: 300px;
+    order: -1;
+  }
+
+  .prism__scene {
+    transform: scale(0.9);
+  }
+
+  .profile {
+    grid-template-columns: auto 1fr;
+    padding: var(--space-xl);
+  }
+
+  .profile__avatar,
+  .profile__avatar-fallback {
+    width: 110px;
+    height: 110px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .repos__grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+/* --- Small Laptops (769-1024px) --- */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero__headline {
+    font-size: var(--font-size-4xl);
+  }
+
+  .hero__content {
+    gap: var(--space-2xl);
+  }
+
+  .prism__scene {
+    width: 280px;
+    height: 320px;
+  }
+
+  .navbar__subtitle {
+    display: block;
+  }
+}
+
+/* --- Desktop (1025px+) --- */
+@media (min-width: 1025px) {
+  .navbar__subtitle {
+    display: block;
+  }
+}
+
+/* --- Large Screens (1440px+) --- */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1320px;
+  }
+
+  .hero__headline {
+    font-size: 3.5rem;
+  }
+
+  .prism__scene {
+    width: 360px;
+    height: 400px;
+  }
+}

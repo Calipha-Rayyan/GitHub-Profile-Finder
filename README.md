@@ -7,24 +7,33 @@
 
 ## 📸 Screenshots
 
-| Vibrant Desktop Hero & 3D Prism | Results Toolbar & Profile View |
+| Corrected Hero (Zero Blank Gaps) | Dedicated Results View ("← Back to Search") |
 |:---:|:---:|
-| ![Vibrant Hero View](./screenshots/vibrant-desktop-hero.png) | ![Results Toolbar & Profile](./screenshots/vibrant-results-toolbar.png) |
+| ![Corrected Hero](./screenshots/qa-corrected-hero.png) | ![Results View with Back Button](./screenshots/qa-profile-results-back-btn.png) |
 
-| Multi-User Discovery (`@gaearon`) | Repository Discovery Grid |
+| Repository Cards with 3D Tilt & Local Star | Dedicated Saved Repositories View |
 |:---:|:---:|
-| ![Multi-User Discovery](./screenshots/vibrant-second-profile.png) | ![Repo Grid](./screenshots/5-repo-grid.png) |
+| ![Repo 3D Tilt](./screenshots/qa-repo-card-3d-tilt.png) | ![Saved Repositories View](./screenshots/qa-saved-repositories-view.png) |
+
+| Persistent Search History (Avatars & Clear) | Fully Accessible Reduced-Motion Mode |
+|:---:|:---:|
+| ![Recent Searches](./screenshots/qa-recent-searches.png) | ![Reduced Motion Mode](./screenshots/qa-reduced-motion.png) |
 
 ---
 
 ## ✨ Features
 
-- **Live GitHub REST API Integration:** Direct client-side integration querying public user profiles and repositories via native browser `fetch`.
-- **Enhanced Results Toolbar:** Seamless multi-user exploration. Once results appear, a persistent toolbar provides an active profile badge, an inline search input with instant submission, and a quick "Top" scroll button—eliminating the need to manually scroll back to the hero to search another developer.
-- **Smart URL & Handle Sanitization:** Automatically parses raw usernames, `@username` tags, and complete profile URLs (e.g., `https://github.com/Calipha-Rayyan`) down to clean identifiers.
-- **Interactive 3D Spatial Hero:** Multi-layered isometric prism composition built with CSS 3D perspective (`1200px`), depth-separated planes (`translateZ(0px)` to `-180px`), and cursor parallax tracking that responds across the entire hero section.
+- **Clean View Routing & Navigation Flow:** Predictable flow between dedicated views:
+  **Search Screen → Profile Results Screen → Back to Search → Saved Repositories Screen**.
+  Synchronized with browser `pushState` and `popstate` so browser Back and Forward buttons work seamlessly.
+- **Prominent “← Back to Search” Action:** Easily discoverable button at the top of the Results and Saved views. Restores the search view, automatically refocuses and selects the username input, and preserves search history and local favorites.
+- **Persistent Search History:** Automatically saves successfully searched usernames in `localStorage` (`github_profile_finder_history_v1`) up to 10 entries. Features case-insensitive deduplication, real avatar badges, instant click-to-search, and a safe two-step "Clear History" confirmation action.
+- **Local Favorite / Saved Repositories:** Bookmark interesting repositories locally for instant reference without consuming API quotas. Includes a dedicated **Saved Repositories** view accessible from both the Navbar (`Saved (count)`) and Results view, with direct GitHub links, local bookmark toggles, and deliberate empty states. *(Note: local favorites are strictly application-level bookmarks and distinct from GitHub's remote star counts).*
+- **Interactive 3D Repository Cards:** Cards respond to mouse cursor coordinates on desktop with restrained 3–5° perspective tilt (`perspective(800px) rotateX(...) rotateY(...) translateY(-4px)`), dynamic specular radial lighting (`--card-glow-x/y`), and staggered entrance reveals (`@keyframes reveal-repo-card`).
+- **Complete Blank Space Elimination:** Hero section intrinsically sizes to fill available space (`flex: 1`), removing unexplained empty vertical regions, horizontal seam borders, and layout clipping.
+- **Interactive 3D Spatial Hero:** Multi-layered isometric prism composition with CSS 3D perspective (`1200px`), depth-separated planes, and cursor parallax tracking that responds across the entire hero.
 - **Vibrant Looping Video Background:** High-definition 8-second seamless looping abstract motion graphic (`public/videos/hero-bg.webm`, 1.75 MB) featuring glowing cyan, magenta, and coral particles and geometric prisms, with radial vignette framing for optimal contrast.
-- **Quick-Discovery Suggestion Chips:** One-click sample profile buttons (`octocat`, `gaearon`, `Calipha-Rayyan`) for instant exploration.
+- **Live GitHub REST API Integration:** Direct client-side integration querying public user profiles and repositories via native browser `fetch` with AbortController cancellation for obsolete requests.
 - **Complete State Coverage:**
   - **Empty Input:** Pre-flight validation prevents unnecessary API consumption.
   - **Malformed Input:** Validates GitHub username regex patterns (1–39 alphanumeric and hyphen characters).
@@ -182,20 +191,23 @@ GitHub-Profile-Finder/
 │   └── responsive-tablet-768.png
 ├── scripts/
 │   ├── generate-video.js        # Script that recorded the WebM background video
+│   ├── verify-all-fixes.js      # Comprehensive 24-point automated test suite
 │   ├── verify-app.js            # General browser verification script
-│   └── qa-runner.js             # Comprehensive 24-point automated test suite
+│   └── qa-runner.js             # Automated QA test runner
 └── src/
     ├── main.jsx                 # React root mount
-    ├── App.jsx                  # Main orchestrator & state manager
+    ├── App.jsx                  # Main orchestrator & state manager (view routing)
     ├── components/
-    │   ├── Navbar.jsx           # Sticky glassmorphic header
+    │   ├── Navbar.jsx           # Sticky header with brand & Saved Repositories button
     │   ├── Hero.jsx             # 3D prism, video background & search container
     │   ├── SearchForm.jsx       # Input field with URL sanitization & validation
-    │   ├── ResultsToolbar.jsx   # Results toolbar for quick re-search & active profile
+    │   ├── RecentSearches.jsx   # Persistent search history chips with safe clear
+    │   ├── ResultsToolbar.jsx   # Top toolbar with Back to Search & active profile
     │   ├── ProfileCard.jsx      # Avatar, user metadata & external profile link
     │   ├── ProfileStats.jsx     # Repository, follower, and following counts
     │   ├── RepositoryGrid.jsx   # Grid list with pagination control
-    │   ├── RepositoryCard.jsx   # Repository details, language pill & stats
+    │   ├── RepositoryCard.jsx   # 3D tilt card, local favorite bookmark & details
+    │   ├── SavedRepositoriesView.jsx # Dedicated screen for locally saved repositories
     │   ├── LoadingState.jsx     # Spinner & animated skeleton shimmer
     │   ├── ErrorState.jsx       # Contextual alerts with dynamic retry
     │   └── EmptyState.jsx       # Zero-repository empty state
@@ -204,7 +216,8 @@ GitHub-Profile-Finder/
     │   ├── useReducedMotion.js  # Detects prefers-reduced-motion media query
     │   └── useScrollMotion.js   # Parallax scroll offset calculations
     ├── services/
-    │   └── githubApi.js         # Fetch client, error parsing & rate limit header checks
+    │   ├── githubApi.js         # Fetch client, error parsing & rate limit header checks
+    │   └── storage.js           # Versioned localStorage for history & saved repositories
     └── styles/
         ├── global.css           # Design tokens, resets, typography, and focus outlines
         ├── components.css       # Component styling, 3D spatial properties & keyframes

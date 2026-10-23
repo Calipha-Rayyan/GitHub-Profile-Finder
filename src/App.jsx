@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ProfileCard from './components/ProfileCard';
@@ -7,17 +7,31 @@ import RepositoryGrid from './components/RepositoryGrid';
 import LoadingState from './components/LoadingState';
 import ErrorState from './components/ErrorState';
 import ResultsToolbar from './components/ResultsToolbar';
+import SavedRepositoriesView from './components/SavedRepositoriesView';
+import ErrorModal from './components/ErrorModal';
 import { fetchUserProfile, fetchUserRepos } from './services/githubApi';
+import {
+  getSearchHistory,
+  addSearchHistory,
+  clearSearchHistory,
+  getSavedRepos,
+  toggleSavedRepo,
+} from './services/storage';
 
 import './styles/global.css';
 import './styles/components.css';
 import './styles/responsive.css';
 
 /**
- * App — Root component orchestrating search, profile, and repository display.
+ * App — Root component orchestrating search, profile, repository display,
+ * persistent history, and local favorites.
  */
 export default function App() {
-  // Profile state
+  // Navigation View State: 'search' | 'results' | 'saved'
+  const [currentView, setCurrentView] = useState('search');
+  const [currentSearchTerm, setCurrentSearchTerm] = useState('');
+
+  // Profile & Search state
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [profileError, setProfileError] = useState(null);
@@ -29,24 +43,100 @@ export default function App() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [repoError, setRepoError] = useState(null);
 
-  // Track current search to prevent stale results
+  // Persistent storage state
+  const [searchHistory, setSearchHistory] = useState(() => getSearchHistory());
+  const [savedRepos, setSavedRepos] = useState(() => getSavedRepos());
+
+  // Centered Error Modal State for wrong/invalid usernames
+  const [errorModal, setErrorModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    username: '',
+  });
+
+  // Track request cancellations
   const currentSearchRef = useRef('');
   const abortRef = useRef(null);
-  const resultsRef = useRef(null);
+
+  // Fast lookup set of saved repository IDs
+  const savedRepoIds = useMemo(() => {
+    return new Set(savedRepos.map((r) => r.id));
+  }, [savedRepos]);
 
   /**
-   * Handle a new username search.
+   * Synchronize browser URL query params without reloading
    */
-  const handleSearch = useCallback(async (username) => {
-    // Abort any in-flight request
+  const updateUrl = useCallback((view, username = '') => {
+    try {
+      const url = new URL(window.location.href);
+      if (view === 'results' && username) {
+        url.searchParams.set('user', username);
+        url.searchParams.delete('tab');
+      } else if (view === 'saved') {
+        url.searchParams.set('tab', 'saved');
+        url.searchParams.delete('user');
+      } else {
+        url.searchParams.delete('user');
+        url.searchParams.delete('tab');
+      }
+      window.history.pushState({ view, username }, '', url.toString());
+    } catch {
+      // Fallback for non-standard environments
+    }
+  }, []);
+
+  /**
+   * Handle invalid or empty username submissions from the search form
+   */
+  const handleInvalidSearch = useCallback((validationError, rawQuery) => {
+    const trimmed = (rawQuery || '').trim();
+    setErrorModal({
+      isOpen: true,
+      title: trimmed ? 'Invalid Username Format' : 'Username Required',
+      message: trimmed
+        ? `"${trimmed}" is not a valid GitHub username. Usernames may only contain alphanumeric characters and hyphens (1–39 characters, no leading or trailing hyphens).`
+        : 'Please enter a GitHub username to search for profiles and repositories.',
+      username: trimmed,
+    });
+  }, []);
+
+  /**
+   * Dismiss the error modal and restore focus to search input
+   */
+  const handleDismissErrorModal = useCallback(() => {
+    setErrorModal((prev) => ({ ...prev, isOpen: false }));
+    // If not on search view and no user loaded, return to search view
+    if (!user) {
+      setCurrentView('search');
+      updateUrl('search');
+    }
+    setTimeout(() => {
+      const input = document.querySelector('#hero-github-username');
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }, 100);
+  }, [user, updateUrl]);
+
+  /**
+   * Handle primary search for a username
+   */
+  const handleSearch = useCallback(async (username, skipHistoryUpdate = false) => {
+    if (!username) return;
+
+    // Abort prior in-flight request
     if (abortRef.current) {
       abortRef.current.abort();
     }
     const controller = new AbortController();
     abortRef.current = controller;
     currentSearchRef.current = username;
+    setCurrentSearchTerm(username);
 
-    // Reset state
+    // Switch view to results immediately with loading state
+    setCurrentView('results');
     setUser(null);
     setRepos([]);
     setRepoPage(1);
@@ -55,22 +145,27 @@ export default function App() {
     setRepoError(null);
     setIsLoading(true);
 
+    if (!skipHistoryUpdate) {
+      updateUrl('results', username);
+    }
+
     try {
-      // Fetch profile
+      // Fetch user profile
       const userData = await fetchUserProfile(username, controller.signal);
 
-      // Check if this is still the current search
+      // Verify request identity
       if (currentSearchRef.current !== username) return;
 
       setUser(userData);
       setIsLoading(false);
 
-      // Scroll to results
-      setTimeout(() => {
-        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      // Record in persistent history
+      const updatedHistory = addSearchHistory(userData.login, userData);
+      if (updatedHistory) {
+        setSearchHistory(updatedHistory);
+      }
 
-      // Fetch repos (independent — profile stays visible on repo failure)
+      // Fetch first page of repositories
       try {
         const { repos: repoData, hasMore } = await fetchUserRepos(username, 1, controller.signal);
         if (currentSearchRef.current !== username) return;
@@ -87,11 +182,73 @@ export default function App() {
       if (currentSearchRef.current !== username) return;
       setIsLoading(false);
       setProfileError(error);
+
+      // If user was not found (404), trigger the centered error modal
+      if (error.type === 'not_found' || error.status === 404) {
+        setErrorModal({
+          isOpen: true,
+          title: 'User Not Found',
+          message: `We couldn't find a GitHub profile for "${username}". Please check the spelling or try searching another developer.`,
+          username: username,
+        });
+      }
     }
+  }, [updateUrl]);
+
+  /**
+   * Return back to search view
+   */
+  const handleBackToSearch = useCallback(() => {
+    setCurrentView('search');
+    updateUrl('search');
+    // Focus search input after view renders
+    setTimeout(() => {
+      const input = document.querySelector('#hero-github-username');
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }, 80);
+  }, [updateUrl]);
+
+  /**
+   * Open the Saved Repositories view
+   */
+  const handleOpenSaved = useCallback(() => {
+    setCurrentView('saved');
+    updateUrl('saved');
+  }, [updateUrl]);
+
+  /**
+   * Return to results from saved view
+   */
+  const handleReturnToResults = useCallback(() => {
+    if (user) {
+      setCurrentView('results');
+      updateUrl('results', user.login);
+    } else {
+      handleBackToSearch();
+    }
+  }, [user, handleBackToSearch, updateUrl]);
+
+  /**
+   * Clear search history
+   */
+  const handleClearHistory = useCallback(() => {
+    const cleared = clearSearchHistory();
+    setSearchHistory(cleared);
   }, []);
 
   /**
-   * Load more repositories (next page).
+   * Toggle a repository's local favorite bookmark
+   */
+  const handleToggleFavorite = useCallback((repo) => {
+    const { list } = toggleSavedRepo(repo);
+    setSavedRepos([...list]);
+  }, []);
+
+  /**
+   * Load more repositories (pagination)
    */
   const handleLoadMore = useCallback(async () => {
     if (loadingMore || !user) return;
@@ -102,8 +259,6 @@ export default function App() {
 
     try {
       const { repos: newRepos, hasMore } = await fetchUserRepos(user.login, nextPage);
-
-      // Prevent duplicates
       setRepos((prev) => {
         const existingIds = new Set(prev.map((r) => r.id));
         const unique = newRepos.filter((r) => !existingIds.has(r.id));
@@ -121,14 +276,13 @@ export default function App() {
   }, [loadingMore, user, repoPage]);
 
   /**
-   * Retry loading repositories after an error.
+   * Retry initial repository load
    */
   const handleRetryRepos = useCallback(() => {
     if (!user) return;
     setRepoError(null);
 
     if (repos.length === 0) {
-      // Retry initial repo load
       (async () => {
         try {
           const { repos: repoData, hasMore } = await fetchUserRepos(user.login, 1);
@@ -140,68 +294,139 @@ export default function App() {
         }
       })();
     } else {
-      // Retry loading more
       handleLoadMore();
     }
   }, [user, repos.length, handleLoadMore]);
 
+  /**
+   * Listen to browser back/forward buttons and initial URL query params
+   */
+  useEffect(() => {
+    const parseUrlState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const userParam = params.get('user');
+      const tabParam = params.get('tab');
+
+      if (tabParam === 'saved') {
+        setCurrentView('saved');
+      } else if (userParam) {
+        handleSearch(userParam, true);
+      } else {
+        setCurrentView('search');
+      }
+    };
+
+    // Parse initial URL on load
+    parseUrlState();
+
+    // Handle back/forward navigation
+    const handlePopState = () => {
+      parseUrlState();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [handleSearch]);
+
   return (
-    <>
-      <Navbar />
-      <main>
-        <Hero onSearch={handleSearch} isLoading={isLoading} />
+    <div className="app-layout">
+      <Navbar
+        onGoHome={handleBackToSearch}
+        onOpenSaved={handleOpenSaved}
+        savedCount={savedRepos.length}
+        currentView={currentView}
+      />
 
-        <div className="results container" ref={resultsRef}>
-          {isLoading && <LoadingState />}
+      <main className="main-content">
+        {/* VIEW 1: SEARCH PAGE */}
+        {currentView === 'search' && (
+          <Hero
+            onSearch={handleSearch}
+            onInvalidSearch={handleInvalidSearch}
+            isLoading={isLoading}
+            searchHistory={searchHistory}
+            onSelectHistory={handleSearch}
+            onClearHistory={handleClearHistory}
+            initialQuery={currentSearchTerm}
+          />
+        )}
 
-          {profileError && (
-            <ErrorState
-              title={
-                profileError.type === 'not_found'
-                  ? 'User Not Found'
-                  : profileError.type === 'rate_limit'
-                  ? 'Rate Limit Exceeded'
-                  : profileError.type === 'forbidden'
-                  ? 'Access Forbidden'
-                  : profileError.type === 'network_error'
-                  ? 'Connection Error'
-                  : 'Something Went Wrong'
-              }
-              message={profileError.message}
-              type={profileError.type}
-              resetTime={profileError.resetTime}
-              onRetry={() => handleSearch(currentSearchRef.current)}
+        {/* VIEW 2: DEDICATED RESULTS PAGE */}
+        {currentView === 'results' && (
+          <div className="results-view container">
+            {/* Top Toolbar: clean header with Back to Search and Saved shortcut */}
+            <ResultsToolbar
+              currentUsername={user?.login || currentSearchTerm}
+              onBackToSearch={handleBackToSearch}
+              savedCount={savedRepos.length}
+              onOpenSaved={handleOpenSaved}
             />
-          )}
 
-          {user && !isLoading && (
-            <>
-              <ResultsToolbar
-                currentUsername={user.login}
-                onSearch={handleSearch}
-                isLoading={isLoading}
-                onScrollToHero={() => {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                  setTimeout(() => {
-                    document.querySelector('#hero-github-username')?.focus();
-                  }, 300);
-                }}
-              />
-              <ProfileCard user={user} />
-              <ProfileStats user={user} />
-              <RepositoryGrid
-                repos={repos}
-                totalPublicRepos={user.public_repos ?? 0}
-                hasMore={hasMoreRepos}
-                loadingMore={loadingMore}
-                onLoadMore={handleLoadMore}
-                repoError={repoError}
-                onRetry={handleRetryRepos}
-              />
-            </>
-          )}
-        </div>
+            {isLoading && <LoadingState />}
+
+            {profileError && (
+              <div className="results-view__error-wrap">
+                <ErrorState
+                  title={
+                    profileError.type === 'not_found'
+                      ? 'User Not Found'
+                      : profileError.type === 'rate_limit'
+                      ? 'Rate Limit Exceeded'
+                      : profileError.type === 'forbidden'
+                      ? 'Access Forbidden'
+                      : profileError.type === 'network_error'
+                      ? 'Connection Error'
+                      : 'Something Went Wrong'
+                  }
+                  message={profileError.message}
+                  type={profileError.type}
+                  resetTime={profileError.resetTime}
+                  onRetry={() => handleSearch(currentSearchRef.current)}
+                />
+              </div>
+            )}
+
+            {user && !isLoading && (
+              <>
+                <ProfileCard user={user} />
+                <ProfileStats user={user} />
+                <RepositoryGrid
+                  repos={repos}
+                  totalPublicRepos={user.public_repos ?? 0}
+                  hasMore={hasMoreRepos}
+                  loadingMore={loadingMore}
+                  onLoadMore={handleLoadMore}
+                  repoError={repoError}
+                  onRetry={handleRetryRepos}
+                  savedRepoIds={savedRepoIds}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              </>
+            )}
+          </div>
+        )}
+
+        {/* VIEW 3: DEDICATED SAVED REPOSITORIES PAGE */}
+        {currentView === 'saved' && (
+          <SavedRepositoriesView
+            savedRepos={savedRepos}
+            onToggleFavorite={handleToggleFavorite}
+            onBackToSearch={handleBackToSearch}
+            activeUsername={user?.login || null}
+            onReturnToResults={user ? handleReturnToResults : null}
+          />
+        )}
       </main>
+
+      {/* Centered Error Modal for wrong/invalid usernames */}
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        title={errorModal.title}
+        message={errorModal.message}
+        username={errorModal.username}
+        onClose={handleDismissErrorModal}
+        onTryAgain={handleDismissErrorModal}
+      />
 
       <footer className="footer">
         <div className="container footer__inner">
@@ -220,6 +445,6 @@ export default function App() {
           </p>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

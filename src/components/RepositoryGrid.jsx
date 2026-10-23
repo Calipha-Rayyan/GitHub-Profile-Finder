@@ -4,7 +4,7 @@ import ErrorState from './ErrorState';
 
 /**
  * RepositoryGrid Component
- * Displays repository cards in a responsive grid with load-more pagination.
+ * Displays repository cards in a responsive grid with load-more pagination and local favorites.
  *
  * @param {object} props
  * @param {Array} props.repos - Array of repository objects
@@ -14,6 +14,8 @@ import ErrorState from './ErrorState';
  * @param {function} props.onLoadMore - Callback to load next page
  * @param {object|null} props.repoError - Repository-specific error
  * @param {function} props.onRetry - Callback to retry repo fetch
+ * @param {Array|Set} [props.savedRepoIds] - Set or Array of saved repo IDs
+ * @param {function} [props.onToggleFavorite] - Callback to toggle favorite state
  */
 export default function RepositoryGrid({
   repos,
@@ -23,7 +25,19 @@ export default function RepositoryGrid({
   onLoadMore,
   repoError,
   onRetry,
+  savedRepoIds = new Set(),
+  onToggleFavorite,
 }) {
+  const isSaved = (repoId) => {
+    if (savedRepoIds instanceof Set) {
+      return savedRepoIds.has(repoId);
+    }
+    if (Array.isArray(savedRepoIds)) {
+      return savedRepoIds.includes(repoId);
+    }
+    return false;
+  };
+
   return (
     <section className="repos" aria-label="Repositories">
       <div className="repos__header">
@@ -51,7 +65,12 @@ export default function RepositoryGrid({
           <div className="repos__grid" role="list">
             {repos.map((repo, index) => (
               <div role="listitem" key={repo.id}>
-                <RepositoryCard repo={repo} index={index} />
+                <RepositoryCard
+                  repo={repo}
+                  index={index}
+                  isSaved={isSaved(repo.id)}
+                  onToggleFavorite={onToggleFavorite}
+                />
               </div>
             ))}
           </div>
@@ -78,7 +97,7 @@ export default function RepositoryGrid({
               >
                 {loadingMore ? (
                   <>
-                    <span className="search-form__btn-spinner" aria-hidden="true" style={{ borderColor: 'rgba(103,80,216,0.3)', borderTopColor: 'var(--color-primary)' }} />
+                    <span className="search-form__btn-spinner" aria-hidden="true" style={{ borderColor: 'rgba(109,40,217,0.3)', borderTopColor: 'var(--color-primary)' }} />
                     Loading…
                   </>
                 ) : (

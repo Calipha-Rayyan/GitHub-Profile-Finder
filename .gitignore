@@ -50,5 +50,9 @@ Thumbs.db
 
 # Screen recordings & inspection dumps
 *.mp4
+*.webm
+public/videos/
 screenshots/recording_frames/
+screenshots/recording_new/
 scripts/inspect_recording.js
+scripts/inspect_new_recording.js

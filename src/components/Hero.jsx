@@ -2,13 +2,30 @@ import { useRef, useEffect, useState } from 'react';
 import { usePointerTilt } from '../hooks/usePointerTilt';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import SearchForm from './SearchForm';
+import RecentSearches from './RecentSearches';
 
 /**
  * Hero Component
  * Visual centerpiece with responsive 3D spatial prism, vibrant animated video background,
- * and search interface.
+ * search interface, quick-search suggestion chips, and persistent search history.
+ *
+ * @param {object} props
+ * @param {function} props.onSearch - Callback when searching
+ * @param {boolean} props.isLoading - Whether search is pending
+ * @param {Array} [props.searchHistory] - Persistent recent search entries
+ * @param {function} [props.onSelectHistory] - Callback to search from history
+ * @param {function} [props.onClearHistory] - Callback to clear history
+ * @param {string} [props.initialQuery] - Preserved query from previous search
  */
-export default function Hero({ onSearch, isLoading }) {
+export default function Hero({
+  onSearch,
+  onInvalidSearch,
+  isLoading,
+  searchHistory = [],
+  onSelectHistory,
+  onClearHistory,
+  initialQuery = '',
+}) {
   // Attach pointer tilt to entire hero container for full-screen response
   const { containerRef, sceneRef, layersRef } = usePointerTilt({ maxAngle: 18, smoothing: 0.08 });
   const prefersReduced = useReducedMotion();
@@ -109,7 +126,13 @@ export default function Hero({ onSearch, isLoading }) {
             Explore GitHub developers, discover their repositories, and learn more about the work behind their profiles.
           </p>
 
-          <SearchForm onSearch={onSearch} isLoading={isLoading} idPrefix="hero" />
+          <SearchForm
+            onSearch={onSearch}
+            onInvalidSearch={onInvalidSearch}
+            isLoading={isLoading}
+            idPrefix="hero"
+            initialValue={initialQuery}
+          />
 
           <div className="hero__hints">
             <span className="hero__hint-label">Try searching:</span>
@@ -138,6 +161,16 @@ export default function Hero({ onSearch, isLoading }) {
               Calipha-Rayyan
             </button>
           </div>
+
+          {/* Persistent Search History */}
+          {searchHistory.length > 0 && (
+            <RecentSearches
+              history={searchHistory}
+              onSelect={onSelectHistory || onSearch}
+              onClear={onClearHistory}
+              isLoading={isLoading}
+            />
+          )}
         </div>
 
         {/* 3D Prism Composition with Multi-Layer Spatial Depth */}

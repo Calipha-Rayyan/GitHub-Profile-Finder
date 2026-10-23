@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { isValidUsername, cleanUsername } from '../services/githubApi';
 
 /**
@@ -11,17 +11,26 @@ import { isValidUsername, cleanUsername } from '../services/githubApi';
  * @param {string} [props.placeholder] - Custom placeholder text
  * @param {string} [props.className] - Optional custom CSS class
  * @param {string} [props.idPrefix] - Optional prefix for IDs
+ * @param {string} [props.initialValue] - Initial query to prepopulate
  */
 export default function SearchForm({
   onSearch,
+  onInvalidSearch,
   isLoading,
   placeholder = 'octocat (or github.com/username)',
   className = '',
   idPrefix = 'hero',
+  initialValue = '',
 }) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialValue);
   const [error, setError] = useState('');
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (initialValue !== undefined) {
+      setQuery(initialValue);
+    }
+  }, [initialValue]);
 
   const validate = (value) => {
     const cleaned = cleanUsername(value);
@@ -41,6 +50,9 @@ export default function SearchForm({
     if (validationError) {
       setError(validationError);
       inputRef.current?.focus();
+      if (onInvalidSearch) {
+        onInvalidSearch(validationError, query);
+      }
       return;
     }
     setError('');
@@ -97,6 +109,7 @@ export default function SearchForm({
         type="submit"
         className="search-form__btn"
         aria-label={isLoading ? 'Searching…' : 'Search GitHub user'}
+        disabled={isLoading}
       >
         {isLoading ? (
           <>

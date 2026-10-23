@@ -7,9 +7,13 @@
 
 ## 📸 Screenshots
 
-| Corrected Hero (Zero Blank Gaps) | Dedicated Results View ("← Back to Search") |
+| Looping Motion Background (Captured from Video) | Corrected Hero (Zero Blank Gaps) |
 |:---:|:---:|
-| ![Corrected Hero](./screenshots/qa-corrected-hero.png) | ![Results View with Back Button](./screenshots/qa-profile-results-back-btn.png) |
+| ![Looping Motion Video Background](./screenshots/hero-video-frame.png) | ![Corrected Hero](./screenshots/qa-corrected-hero.png) |
+
+| Dedicated Results View ("← Back to Search") | Centered Error Modal (Not Found / Invalid) |
+|:---:|:---:|
+| ![Results View with Back Button](./screenshots/qa-profile-results-back-btn.png) | ![Centered Error Modal](./screenshots/qa-error-modal-wrong-username.png) |
 
 | Repository Cards with 3D Tilt & Local Star | Dedicated Saved Repositories View |
 |:---:|:---:|
@@ -26,6 +30,7 @@
 - **Clean View Routing & Navigation Flow:** Predictable flow between dedicated views:
   **Search Screen → Profile Results Screen → Back to Search → Saved Repositories Screen**.
   Synchronized with browser `pushState` and `popstate` so browser Back and Forward buttons work seamlessly.
+- **Centered Interactive Error Modal:** Displays a modal dialog centered on the screen when an empty, malformed, or nonexistent username is searched. Provides quick-action buttons ("Try Another Search", "Okay"), trap focus management, keyboard Escape key support, backdrop click-to-dismiss, and automatic focus restoration back to the search input.
 - **Prominent “← Back to Search” Action:** Easily discoverable button at the top of the Results and Saved views. Restores the search view, automatically refocuses and selects the username input, and preserves search history and local favorites.
 - **Persistent Search History:** Automatically saves successfully searched usernames in `localStorage` (`github_profile_finder_history_v1`) up to 10 entries. Features case-insensitive deduplication, real avatar badges, instant click-to-search, and a safe two-step "Clear History" confirmation action.
 - **Local Favorite / Saved Repositories:** Bookmark interesting repositories locally for instant reference without consuming API quotas. Includes a dedicated **Saved Repositories** view accessible from both the Navbar (`Saved (count)`) and Results view, with direct GitHub links, local bookmark toggles, and deliberate empty states. *(Note: local favorites are strictly application-level bookmarks and distinct from GitHub's remote star counts).*
@@ -181,15 +186,17 @@ GitHub-Profile-Finder/
 │   │   └── hero-poster.svg      # Vector alternative graphic
 │   └── videos/
 │       └── hero-bg.webm         # Original 8s seamless looping abstract video (1.1 MB)
-├── screenshots/                 # Captured QA screenshots across viewports
-│   ├── 1-desktop-hero.png
-│   ├── 2-empty-validation.png
-│   ├── 3-user-not-found.png
-│   ├── 4-profile-results.png
-│   ├── 5-repo-grid.png
-│   ├── responsive-mobile-375.png
-│   └── responsive-tablet-768.png
+├── screenshots/                 # Captured QA screenshots & video frames
+│   ├── hero-video-frame.png     # Frame captured from looping motion video
+│   ├── qa-corrected-hero.png
+│   ├── qa-error-modal-wrong-username.png # Centered error modal alert
+│   ├── qa-profile-results-back-btn.png
+│   ├── qa-recent-searches.png
+│   ├── qa-reduced-motion.png
+│   ├── qa-repo-card-3d-tilt.png
+│   └── qa-saved-repositories-view.png
 ├── scripts/
+│   ├── extract_hero_frame.js    # Extracts pristine screenshot frames from the motion video
 │   ├── generate-video.js        # Script that recorded the WebM background video
 │   ├── verify-all-fixes.js      # Comprehensive 24-point automated test suite
 │   ├── verify-app.js            # General browser verification script
@@ -201,6 +208,7 @@ GitHub-Profile-Finder/
     │   ├── Navbar.jsx           # Sticky header with brand & Saved Repositories button
     │   ├── Hero.jsx             # 3D prism, video background & search container
     │   ├── SearchForm.jsx       # Input field with URL sanitization & validation
+    │   ├── ErrorModal.jsx       # Centered modal alert for invalid/not-found usernames
     │   ├── RecentSearches.jsx   # Persistent search history chips with safe clear
     │   ├── ResultsToolbar.jsx   # Top toolbar with Back to Search & active profile
     │   ├── ProfileCard.jsx      # Avatar, user metadata & external profile link
